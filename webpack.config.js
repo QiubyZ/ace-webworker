@@ -1,5 +1,5 @@
 const path = require("path");
-const exec = require("child_process");
+const {exec} = require("child_process");
 module.exports = (env, options) => {
 	const { mode = "development" } = options;
 	const rules = [
