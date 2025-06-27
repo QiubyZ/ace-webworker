@@ -29,7 +29,7 @@
 	},
 	"scripts": {
 		"build": "webpack",
-		"build-release": "clear && webpack --mode production",
+		"build-release": "webpack --mode production",
 		"start-dev": "node .vscode/start-dev"
 	},
 	"browserslist": "cover 100%,not android < 5"
