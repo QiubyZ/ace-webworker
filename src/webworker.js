@@ -1,103 +1,72 @@
 import { ServiceManager } from "ace-linters/build/service-manager";
 
-
-
 let manager = new ServiceManager(self);
 manager.registerService("html", {
-	features: { signatureHelp: true },
+	features: {
+		completion: true,
+		completionResolve: true,
+		diagnostics: true,
+		format: true,
+		hover: true,
+		documentHighlight: true,
+		signatureHelp: true,
+	},
+	//module: () => import("./Service/Html/htmlService.js"),
 	module: () => import("ace-linters/build/html-service"),
 	className: "HtmlService",
 	modes: "html",
 });
+
 manager.registerService("css", {
 	features: { signatureHelp: true },
 	module: () => import("ace-linters/build/css-service"),
 	className: "CssService",
 	modes: "css",
 });
+
 manager.registerService("less", {
-	features: { signatureHelp: true },
+	
 	module: () => import("ace-linters/build/css-service"),
 	className: "CssService",
 	modes: "less",
 });
 manager.registerService("scss", {
-	features: { signatureHelp: true },
+
 	module: () => import("ace-linters/build/css-service"),
 	className: "CssService",
 	modes: "scss",
 });
 manager.registerService("json", {
-	features: { signatureHelp: true, documentHighlight: true },
+	
 	module: () => import("ace-linters/build/json-service"),
 	className: "JsonService",
 	modes: "json",
 });
 manager.registerService("json5", {
-	features: { signatureHelp: true, documentHighlight: true },
+	
 	module: () => import("ace-linters/build/json-service"),
 	className: "JsonService",
 	modes: "json5",
 });
 
 manager.registerService("yaml", {
-	features: { signatureHelp: true, documentHighlight: true },
+	
 	module: () => import("ace-linters/build/yaml-service"),
 	className: "YamlService",
 	modes: "yaml",
 });
+
 manager.registerService("xml", {
-	features: {
-		completion: true,
-		completionResolve: true,
-		diagnostics: true,
-		format: true,
-		hover: true,
-		documentHighlight: true,
-		signatureHelp: true,
-	},
 	module: () => import("ace-linters/build/xml-service"),
 	className: "XmlService",
 	modes: "xml",
 });
 manager.registerService("php", {
-	features: {
-		completion: true,
-		completionResolve: true,
-		diagnostics: true,
-		format: true,
-		hover: true,
-		documentHighlight: true,
-		signatureHelp: true,
-	},
 	module: () => import("ace-linters/build/php-service"),
 	className: "PhpService",
 	modes: "php",
 });
 manager.registerService("javascript", {
-	module: () => import("ace-linters/build/javascript-service"),
-	className: "JavascriptService",
-	modes: "javascript",
-});
-
-manager.registerService("typescript", {
-	module: () => import("ace-linters/build/typescript-service"),
-	className: "TypescriptService",
-	modes: "typescript|javascript|tsx",
-});
-
-manager.registerServer("java", {
-	module: () => import("ace-linters/build/language-client"),
-	modes: "java",
-	type: "socket",
-	socket: new WebSocket("ws://127.0.0.1:2080/java"),
-});
-manager.registerServer("javascript", {
-	module: () => import("ace-linters/build/language-client"),
-
-	modes: "javascript|typescript|js|jsx",
-	type: "socket", // "socket|worker"
-	socket: new WebSocket("ws://127.0.0.1:2080/typescript"),
 	initializationOptions: {
 		preferences: {
 			providePrefixAndSuffixTextForRename: true,
@@ -122,8 +91,79 @@ manager.registerServer("javascript", {
 			tsdk: "/data/data/com.termux/files/usr/lib/node_modules/typescript/lib",
 		},
 	},
-}
-);
+	module: () => import("ace-linters/build/javascript-service"),
+	className: "JavascriptService",
+	modes: "javascript",
+});
+
+manager.registerService("typescript", {
+	module: () => import("ace-linters/build/typescript-service"),
+	className: "TypescriptService",
+	modes: "typescript|javascript|tsx",
+	initializationOptions: {
+		preferences: {
+			providePrefixAndSuffixTextForRename: true,
+			allowRenameOfImportPath: true,
+			includeCompletionsForModuleExports: true,
+			includeCompletionsWithInsertText: true,
+			includeCompletionsWithSnippetText: true,
+			includeAutomaticOptionalChainCompletions: true,
+			includeInlayEnumValueHints: true,
+			includeInlayFunctionParameterTypeHints: true,
+			includeInlayParameterNameHints: "all",
+			includeInlayVariableTypeHints: true,
+			useLabelDetailsInCompletionEntries: true,
+			disableSuggestions: false,
+			displayPartsForJSDoc: true,
+		},
+		watchOptions: {
+			watchFile: "DynamicPriorityPolling",
+			watchDirectory: "Recursive",
+		},
+		typescript: {
+			tsdk: "/data/data/com.termux/files/usr/lib/node_modules/typescript/lib",
+		},
+	},
+});
+
+// manager.registerServer("java", {
+// 	module: () => import("ace-linters/build/language-client"),
+// 	modes: "java",
+// 	type: "socket",
+// 	socket: new WebSocket("ws://127.0.0.1:2080/java"),
+// });
+// manager.registerServer("javascript", {
+// 	module: () => import("ace-linters/build/language-client"),
+
+// 	modes: "javascript|typescript|js|jsx",
+// 	type: "socket", // "socket|worker"
+// 	socket: new WebSocket("ws://127.0.0.1:2080/typescript"),
+// 	initializationOptions: {
+// 		preferences: {
+// 			providePrefixAndSuffixTextForRename: true,
+// 			allowRenameOfImportPath: true,
+// 			includeCompletionsForModuleExports: true,
+// 			includeCompletionsWithInsertText: true,
+// 			includeCompletionsWithSnippetText: true,
+// 			includeAutomaticOptionalChainCompletions: true,
+// 			includeInlayEnumValueHints: true,
+// 			includeInlayFunctionParameterTypeHints: true,
+// 			includeInlayParameterNameHints: "all",
+// 			includeInlayVariableTypeHints: true,
+// 			useLabelDetailsInCompletionEntries: true,
+// 			disableSuggestions: false,
+// 			displayPartsForJSDoc: true,
+// 		},
+// 		watchOptions: {
+// 			watchFile: "DynamicPriorityPolling",
+// 			watchDirectory: "Recursive",
+// 		},
+// 		typescript: {
+// 			tsdk: "/data/data/com.termux/files/usr/lib/node_modules/typescript/lib",
+// 		},
+// 	},
+// }
+// );
 
 // manager.registerService("lua", {
 // 	features: {
@@ -216,4 +256,3 @@ manager.registerServer("go", {
 // 	className: "AceGoLinter",
 // 	modes: "go",
 // });
-

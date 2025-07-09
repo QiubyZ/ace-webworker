@@ -3,9 +3,9 @@ import plugin from "../plugin.json";
 //import { Client } from "./client.js";
 //import { AceLanguageClient } from "ace-linters/build/ace-language-client";
 import { LanguageProvider } from "ace-linters";
-
 let appSettings = acode.require("settings");
 let { editor } = editorManager;
+ace.require("ace/ext/language_tools");
 class AcodePlugin {
 	$folders;
 	defaultSettings = {
@@ -20,25 +20,39 @@ class AcodePlugin {
 		// 			enableSnippets: true,
 		// 			fontSize: "14px",
 		// 		});
+		editor.setOptions({
+			enableBasicAutocompletion: true,
+			enableLiveAutocompletion: true,
+		});
 		let test = this.MyWorker();
+		// 		editor.commands.on("afterExec", function (e) {
+		// 			if (e.command.name == "insertstring" && /^[\w.]$/.test(e.args)) {
+		// 				editor.execCommand("startAutocomplete");
+		// 			}
+		// 		});
+		// 		let completer = editor.completers.find((el) => el.id === "lspCompleters");
+		// 		completer.triggerCharacters = [".", "<"];
+		// 		console.log(completer);
 	}
 	MyWorker() {
 		let worker = new Worker(new URL("./webworker.js", import.meta.url), {
 			type: "module",
-		});
+		})
+		
 		let test = LanguageProvider.create(worker, {
 			functionality: {
 				completion: {
-					overwriteCompleters: true,
+					overwriteCompleters: false,
 					lspCompleterOptions: {
 						triggerCharacters: {
-							add: ["."],
+							add: [".", "<"],
 						},
 					},
 				},
 			},
 		});
-		test.configureServiceFeatures("javascript", {
+		
+		test.configureServiceFeatures("", {
 			features: {
 				completion: true,
 				completionResolve: true,
@@ -52,7 +66,9 @@ class AcodePlugin {
 		test.registerEditor(editor);
 		worker.addEventListener("message", (result) => {
 			console.log(result.data);
+			console.log(editor.completers.splice(1,2))
 		});
+		
 		//test.doHover(editor.session, editor.getCursorPosition());
 		//test.setSessionFilePath(editor.session, {});
 		return test; //manager;
