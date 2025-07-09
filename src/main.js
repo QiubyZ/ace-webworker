@@ -24,25 +24,26 @@ class AcodePlugin {
 			enableBasicAutocompletion: true,
 			enableLiveAutocompletion: true,
 		});
+		let completer = editor.completers.find((el) => el.id === "lspCompleters");
+		completer.triggerCharacters = [".", "<"];
+		console.log(completer);
+		
 		let test = this.MyWorker();
-		// 		editor.commands.on("afterExec", function (e) {
-		// 			if (e.command.name == "insertstring" && /^[\w.]$/.test(e.args)) {
-		// 				editor.execCommand("startAutocomplete");
-		// 			}
-		// 		});
-		// 		let completer = editor.completers.find((el) => el.id === "lspCompleters");
-		// 		completer.triggerCharacters = [".", "<"];
-		// 		console.log(completer);
+		editor.commands.on("afterExec", function (e) {
+			if (e.command.name == "insertstring" && /^[\w.]$/.test(e.args)) {
+				editor.execCommand("startAutocomplete");
+			}
+		});
 	}
 	MyWorker() {
 		let worker = new Worker(new URL("./webworker.js", import.meta.url), {
 			type: "module",
-		})
-		
+		});
+
 		let test = LanguageProvider.create(worker, {
 			functionality: {
 				completion: {
-					overwriteCompleters: false,
+					overwriteCompleters: true,
 					lspCompleterOptions: {
 						triggerCharacters: {
 							add: [".", "<"],
@@ -51,7 +52,7 @@ class AcodePlugin {
 				},
 			},
 		});
-		
+
 		test.configureServiceFeatures("", {
 			features: {
 				completion: true,
@@ -66,9 +67,9 @@ class AcodePlugin {
 		test.registerEditor(editor);
 		worker.addEventListener("message", (result) => {
 			console.log(result.data);
-			console.log(editor.completers.splice(1,2))
+			console.log(editor.completers.splice(1, 2));
 		});
-		
+
 		//test.doHover(editor.session, editor.getCursorPosition());
 		//test.setSessionFilePath(editor.session, {});
 		return test; //manager;
@@ -107,6 +108,14 @@ class AcodePlugin {
 				key: "port",
 				text: "Port IP",
 				info: "Set Port IP",
+				value: this.getSettings.port,
+				prompt: "Enter Port",
+				promptType: "number",
+			},
+			{
+				key: "completer",
+				text: "Completer",
+				info: "Completer",
 				value: this.getSettings.port,
 				prompt: "Enter Port",
 				promptType: "number",
