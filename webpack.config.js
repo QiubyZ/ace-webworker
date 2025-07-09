@@ -1,5 +1,7 @@
 
 const path = require("path");
+const {exec} = require("child_process")
+
 
 module.exports = (env, options) => {
 	const { mode = "development" } = options;
@@ -36,6 +38,7 @@ module.exports = (env, options) => {
 				apply: (compiler) => {
 					compiler.hooks.afterDone.tap("pack-zip", () => {
 						// run pack-zip.js
+						
 						exec("node .vscode/pack-zip.js", (err, stdout, stderr) => {
 							if (err) {
 								console.error(err);
