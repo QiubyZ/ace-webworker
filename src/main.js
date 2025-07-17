@@ -100,18 +100,30 @@ class AcodePlugin {
 				signatureHelp: true,
 			},
 		});
-		test.configureServiceFeatures("typescript", this.getSettings.ServiceFeature ||  {
-		     
-			features: {
-				completion: true,
-				completionResolve: true,
-				diagnostics: true,
-				format: true,
-				hover: true,
-				documentHighlight: true,
-				signatureHelp: true,
+		test.configureServiceFeatures(
+			"typescript",
+			this.getSettings.ServiceFeature || {
+				features: {
+					completion: true,
+					completionResolve: true,
+					diagnostics: true,
+					format: true,
+					hover: true,
+					documentHighlight: true,
+					signatureHelp: true,
+				},
 			},
-		}
+		);
+		test.setGlobalOptions(
+			"typescript",
+			this.getSettings.setGlobalOptions || {
+				compilerOptions: {
+					allowJs: true,
+					checkJs: true,
+					target: 99,
+					jsx: 1,
+				},
+			},
 		);
 
 		test.registerEditor(editor);
