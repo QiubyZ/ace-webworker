@@ -1,4 +1,4 @@
-import HtmlService from "ace-linters/build/html-service.js";
+import HtmlService from "ace-linters/build/html-service";
 import * as lsp from "vscode-languageserver-protocol";
 
 export class CustomHtmlService extends HtmlService {
