@@ -13,49 +13,58 @@ manager.registerService("css", {
 	className: "CssService",
 	modes: "css",
 });
+
 manager.registerService("typescript", {
 	module: () => import("ace-linters/build/typescript-service"),
 	className: "TypescriptService",
 	modes: "|tsx|typescript|ts|typescript",
 });
+manager.registerService("javascript", {
+	module: () => import("ace-linters/build/javascript-service"),
+	className: "TypescriptService",
+        modes: "typescript|tsx|javascript",
+});
 
-// manager.registerService("less", {
-// 	module: () => import("ace-linters/build/css-service"),
-// 	className: "CssService",
-// 	modes: "less",
-// });
-// manager.registerService("scss", {
-// 	module: () => import("ace-linters/build/css-service"),
-// 	className: "CssService",
-// 	modes: "scss",
-// });
-// manager.registerService("json", {
-// 	module: () => import("ace-linters/build/json-service"),
-// 	className: "JsonService",
-// 	modes: "json",
-// });
-// manager.registerService("json5", {
-// 	module: () => import("ace-linters/build/json-service"),
-// 	className: "JsonService",
-// 	modes: "json5",
-// });
+manager.registerService("less", {
+	module: () => import("ace-linters/build/css-service"),
+	className: "CssService",
+	modes: "less",
+});
 
-// manager.registerService("yaml", {
-// 	module: () => import("ace-linters/build/yaml-service"),
-// 	className: "YamlService",
-// 	modes: "yaml",
-// });
+manager.registerService("scss", {
+	module: () => import("ace-linters/build/css-service"),
+	className: "CssService",
+	modes: "scss",
+});
+manager.registerService("json", {
+	module: () => import("ace-linters/build/json-service"),
+	className: "JsonService",
+	modes: "json",
+});
+manager.registerService("json5", {
+	module: () => import("ace-linters/build/json-service"),
+	className: "JsonService",
+	modes: "json5",
+});
 
-// manager.registerService("xml", {
-// 	module: () => import("ace-linters/build/xml-service"),
-// 	className: "XmlService",
-// 	modes: "xml",
-// });
-// manager.registerService("php", {
-// 	module: () => import("ace-linters/build/php-service"),
-// 	className: "PhpService",
-// 	modes: "php",
-// });
+manager.registerService("yaml", {
+	module: () => import("ace-linters/build/yaml-service"),
+	className: "YamlService",
+	modes: "yaml",
+});
+
+manager.registerService("xml", {
+	module: () => import("ace-linters/build/xml-service"),
+	className: "XmlService",
+	modes: "xml",
+});
+manager.registerService("php", {
+	module: () => import("ace-linters/build/php-service"),
+	className: "PhpService",
+	modes: "php",
+});
+
+
 // manager.registerService("javascript", {
 // 	initializationOptions: {
 // 		preferences: {
@@ -235,11 +244,7 @@ manager.registerServer("go", {
 // 	modes: "zig",
 // });
 
-// manager.registerService("dart", {
-// 	module: () => import("ace-dart-linter/build/ace-dart-linter"),
-// 	className: "AceDartLinter",
-// 	modes: "dart",
-// });
+
 
 // manager.registerService("golang", {
 // 	module: () => import("ace-linters/build/");

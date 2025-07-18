@@ -9,76 +9,14 @@ ace.require("ace/ext/language_tools");
 class AcodePlugin {
 	$folders;
 	defaultSettings = {
-		port: 4040,
-		ip: "ws://localhost",
-	};
-	// 	injectAceEditor() {
-	// 		const aceScript = document.createElement("script");
-	// 		aceScript.src = "./node_modules/ace-builds/src-noconflict/ace.js";
-	// 		aceScript.type = "module";
-	// 		aceScript.charset = "utf-8";
-	// 		aceScript.onload = () => {
-	// 			console.log("Ace.js loaded!");
-
-	// 			// Setelah ace.js selesai dimuat, load ext-language_tools.js
-	// 			const extToolsScript = document.createElement("script");
-	// 			extToolsScript.src = "ace-builds/src-noconflict/ext-language_tools.js";
-	// 			extToolsScript.charset = "utf-8";
-	// 			extToolsScript.type = "module";
-	// 			extToolsScript.onload = () => {
-	// 				console.log("Ace Extensions loaded!");
-	// 				//initAceEditor(); // Inisialisasi editor setelah semua script siap
-	// 			};
-	// 			document.head.appendChild(extToolsScript);
-	// 		};
-
-	// 		document.head.appendChild(aceScript);
-	// 	}
-
-	async init($page, cacheFile, cacheFileUrl) {
-		//new Client().initialize();
-		// 		const editor = ace.edit("root", {
-		// 			enableBasicAutocompletion: true,
-		// 			enableLiveAutocompletion: true,
-		// 			enableSnippets: true,
-		// 			fontSize: "14px",
-		// 		});
-		let test = this.MyWorker();
-		editor.setOptions({
-			enableBasicAutocompletion: true,
-			enableLiveAutocompletion: true,
-			enableSnippets: true,
-		});
-		// 		let completer = editor.completers.find((el) => el.id === "lspCompleters");
-		// 		completer.triggerCharacters = [".", "<"];
-		// 		console.log(completer);
-
-		// 		editor.commands.on("afterExec", function (e) {
-		// 			if (e.command.name == "insertstring" && /^[\w.]$/.test(e.args)) {
-		// 				editor.execCommand("startAutocomplete");
-		// 			}
-		// 		});
-	}
-
-	MyWorker() {
-		let worker = new Worker(new URL("./webworker.js", import.meta.url), {
-			type: "module",
-		});
-
-		let test = LanguageProvider.create(worker, {
+		Functionality: {
 			functionality: {
 				completion: {
 					overwriteCompleters: false,
-					// 	lspCompleterOptions: {
-					// 		triggerCharacters: {
-					// 			add: [".", "<"],
-					// 		},
-					// 	},
 				},
 			},
-		});
-
-		test.configureServiceFeatures("html", {
+		},
+		LanguageFeatures: {
 			features: {
 				completion: true,
 				completionResolve: true,
@@ -88,35 +26,10 @@ class AcodePlugin {
 				documentHighlight: true,
 				signatureHelp: true,
 			},
-		});
-		test.configureServiceFeatures("css", {
-			features: {
-				completion: true,
-				completionResolve: true,
-				diagnostics: true,
-				format: true,
-				hover: true,
-				documentHighlight: true,
-				signatureHelp: true,
-			},
-		});
-		test.configureServiceFeatures(
-			"typescript",
-			this.getSettings.ServiceFeature || {
-				features: {
-					completion: true,
-					completionResolve: true,
-					diagnostics: true,
-					format: true,
-					hover: true,
-					documentHighlight: true,
-					signatureHelp: true,
-				},
-			},
-		);
-		test.setGlobalOptions(
-			"typescript",
-			this.getSettings.setGlobalOptions || {
+		},
+		setGlobalOptions: {
+			javascript: {},
+			typescript: {
 				compilerOptions: {
 					allowJs: true,
 					checkJs: true,
@@ -124,16 +37,61 @@ class AcodePlugin {
 					jsx: 1,
 				},
 			},
+		},
+	};
+
+	async init($page, cacheFile, cacheFileUrl) {
+		this.MyWorker();
+		editor.setOptions({
+			enableBasicAutocompletion: true,
+			enableLiveAutocompletion: true,
+			enableSnippets: true,
+		});
+	}
+
+	MyWorker() {
+		let worker = new Worker(new URL("./webworker.js", import.meta.url), {
+			type: "module",
+		});
+
+		let test = LanguageProvider.create(
+			worker,
+			this.getSettings.Functionality || this.defaultSettings.Functionality,
+		);
+
+		test.configureServiceFeatures(
+			"html",
+			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
+		);
+
+		test.configureServiceFeatures(
+			"css",
+			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
+		);
+
+		test.configureServiceFeatures(
+			"typescript",
+			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
+		);
+		test.setGlobalOptions(
+			"typescript",
+			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.typescript,
+		);
+		test.configureServiceFeatures(
+			"javascript",
+			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
+		);
+
+		test.setGlobalOptions(
+			"javascript",
+			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.javascript,
 		);
 
 		test.registerEditor(editor);
-		worker.addEventListener("message", (result) => {
-			console.log(result.data);
-			//console.log(editor.completers.splice(1, 2));
-		});
-
-		//test.doHover(editor.session, editor.getCursorPosition());
-		//test.setSessionFilePath(editor.session, {});
+		// 		worker.addEventListener("message", (result) => {
+		// 			//console.log(result.data);
+		// 			//console.log(editor.completers.splice(1, 2));
+		// 		});
 		return test; //manager;
 	}
 	pesan(msg) {
