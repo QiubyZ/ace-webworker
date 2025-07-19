@@ -1,7 +1,4 @@
-// Di dalam plugin Acode kamu (misalnya, main.js atau index.js)
 import plugin from "../plugin.json";
-//import { Client } from "./client.js";
-//import { AceLanguageClient } from "ace-linters/build/ace-language-client";
 import { LanguageProvider } from "ace-linters";
 let appSettings = acode.require("settings");
 let { editor } = editorManager;
@@ -27,6 +24,7 @@ class AcodePlugin {
 				signatureHelp: true,
 			},
 		},
+
 		setGlobalOptions: {
 			javascript: {},
 			typescript: {
@@ -88,10 +86,10 @@ class AcodePlugin {
 		);
 
 		test.registerEditor(editor);
-		// 		worker.addEventListener("message", (result) => {
-		// 			//console.log(result.data);
-		// 			//console.log(editor.completers.splice(1, 2));
-		// 		});
+		worker.addEventListener("message", (result) => {
+			console.log(result.data);
+			//console.log(editor.completers.splice(1, 2));
+		});
 		return test; //manager;
 	}
 	pesan(msg) {
@@ -119,7 +117,7 @@ class AcodePlugin {
 				key: "ip",
 				text: "IP Local",
 				info: "Set Local IP",
-				value: this.getSettings.ip,
+				value: this.getSettings.ip || "127.0.0.1",
 				prompt: "Enter IP Local",
 				promptType: "string",
 			},
@@ -128,15 +126,15 @@ class AcodePlugin {
 				key: "port",
 				text: "Port IP",
 				info: "Set Port IP",
-				value: this.getSettings.port,
+				value: this.getSettings.port || 8080,
 				prompt: "Enter Port",
-				promptType: "number",
+				promptType: "string",
 			},
 			{
 				key: "completer",
 				text: "Completer",
 				info: "Completer",
-				value: this.getSettings.port,
+				value: this.getSettings.port || 8080,
 				prompt: "Enter Port",
 				promptType: "number",
 			},

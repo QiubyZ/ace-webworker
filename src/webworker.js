@@ -2,7 +2,7 @@ import { ServiceManager } from "ace-linters/build/service-manager";
 
 let manager = new ServiceManager(self);
 manager.registerService("html", {
-	//module: () => import("./LanguageService/htmlService/HtmlService.js"),
+	
 	module: () => import("ace-linters/build/html-service"),
 	className: "HtmlService",
 	modes: "html",
@@ -13,17 +13,17 @@ manager.registerService("css", {
 	className: "CssService",
 	modes: "css",
 });
-
 manager.registerService("typescript", {
 	module: () => import("ace-linters/build/typescript-service"),
 	className: "TypescriptService",
-	modes: "|tsx|typescript|ts|typescript",
+	modes: "|tsx|typescript|ts|javascript|ts",
 });
-manager.registerService("javascript", {
-	module: () => import("ace-linters/build/javascript-service"),
-	className: "TypescriptService",
-        modes: "typescript|tsx|javascript",
-});
+
+// manager.registerService("javascript", {
+// 	module: () => import("ace-linters/build/javascript-service"),
+// 	className: "TypescriptService",
+//         modes: "typescript|tsx|javascript",
+// });
 
 manager.registerService("less", {
 	module: () => import("ace-linters/build/css-service"),
@@ -63,7 +63,6 @@ manager.registerService("php", {
 	className: "PhpService",
 	modes: "php",
 });
-
 
 // manager.registerService("javascript", {
 // 	initializationOptions: {
@@ -243,8 +242,6 @@ manager.registerServer("go", {
 // 	className: "AceZigLinter",
 // 	modes: "zig",
 // });
-
-
 
 // manager.registerService("golang", {
 // 	module: () => import("ace-linters/build/");
