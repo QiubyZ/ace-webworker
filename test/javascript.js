@@ -1,9 +1,8 @@
-function testing(unch) {
-	console.log(unch || "ah yameteh");
+class Test{
+    constructor(){
+        
+    }
+    getPath(test){
+        return test
+    }
 }
-const uhu = (ehe) => {
-	console.log(ehe || "Marepyareheee... ");
-};
-testing();
-testing("ah ah jgn om...");
-uhu();

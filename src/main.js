@@ -122,7 +122,7 @@ class AcodePlugin {
 			joinWorkspaceURI: true,
 		});
 		editor.on("file-loaded", async (file) => {
-			const uri = editor.activeFile?.uri;
+			const uri = editorManager.activeFile?.uri;
 			if (!editor || !uri) return;
 
 			const folder = openfolder.find(uri);
@@ -153,10 +153,10 @@ class AcodePlugin {
 			});
 			console.log("switch File RelivePath: ", this.getRelativePath());
 		});
-		worker.addEventListener("message", (result) => {
-			console.log(result.data);
-			//console.log(editor.completers.splice(1, 2));
-		});
+		// 		worker.addEventListener("message", (result) => {
+		// 			console.log(result.data);
+		// 			//console.log(editor.completers.splice(1, 2));
+		// 		});
 		editor.on("changeSession", ({ session }) => {
 			const relativePath = this.getRelativePath();
 			languageProvider.registerEditor(editor, {
