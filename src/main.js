@@ -47,53 +47,126 @@ class AcodePlugin {
 			enableSnippets: true,
 		});
 	}
+	getRelativePath(uri, folderUrl) {
+		if (!uri || !folderUrl) return undefined;
+		const relative = uri.replace(folderUrl, "");
+		return relative.replace(/^\/+/, ""); // remove leading slash if any
+	}
+	formatUrl(path, formatTermux = false) {
+		if (typeof path !== "string") return;
+
+		if (path.startsWith("content://com.termux.documents/tree")) {
+			const [, rawPath] = path.split("::");
+			if (!rawPath) return;
+			return formatTermux
+				? rawPath.replace(/^\/data\/data\/com\.termux\/files\/home/, "$HOME")
+				: rawPath;
+		}
+
+		if (path.startsWith("file:///storage/emulated/0/")) {
+			const relative = path.slice("file:///storage/emulated/0".length);
+			return `/sdcard/${relative}`;
+		}
+
+		if (path.startsWith("content://com.android.externalstorage.documents/tree/primary")) {
+			const [, relative] = path.split("::primary:");
+			if (!relative) return;
+			return `/sdcard/${relative}`;
+		}
+	}
 
 	MyWorker() {
 		let worker = new Worker(new URL("./webworker.js", import.meta.url), {
 			type: "module",
 		});
+		const openfolder = acode.require("openfolder");
+		const uri = editorManager.activeFile?.uri;
+		const folder = openfolder.find(uri);
+		const rootUri = folder?.url ? "file://" + this.formatUrl(folder.url, false) : "file:///";
 
-		let test = LanguageProvider.create(
+		let languageProvider = LanguageProvider.create(
 			worker,
 			this.getSettings.Functionality || this.defaultSettings.Functionality,
 		);
 
-		test.configureServiceFeatures(
+		languageProvider.configureServiceFeatures(
 			"html",
 			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
 		);
 
-		test.configureServiceFeatures(
+		languageProvider.configureServiceFeatures(
 			"css",
 			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
 		);
 
-		test.configureServiceFeatures(
+		languageProvider.configureServiceFeatures(
 			"typescript",
 			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
 		);
-		test.setGlobalOptions(
+		languageProvider.setGlobalOptions(
 			"typescript",
 			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.typescript,
 		);
-		test.configureServiceFeatures(
+		languageProvider.configureServiceFeatures(
 			"javascript",
 			this.getSettings.LanguageFeatures || this.defaultSettings.LanguageFeatures,
 		);
 
-		test.setGlobalOptions(
+		languageProvider.setGlobalOptions(
 			"javascript",
 			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.javascript,
 		);
 
-		test.registerEditor(editor, { filePath: this.activePath, joinWorkspaceURI: true });
+		languageProvider.registerEditor(editor, {
+			filePath: this.getRelativePath(),
+			joinWorkspaceURI: true,
+		});
+		editor.on("file-loaded", async (file) => {
+			const uri = editor.activeFile?.uri;
+			if (!editor || !uri) return;
 
+			const folder = openfolder.find(uri);
+			const folderUrl = folder?.url;
+			const relativePath = this.getRelativePath(uri, folderUrl);
+			console.log("file-loaded RelivePath: ", relativePath);
+			try {
+				languageProvider.setSessionFilePath(editor.session, {
+					filePath: relativePath,
+					joinWorkspaceURI: true,
+				});
+
+				languageProvider.registerEditor(editor, {
+					filePath: relativePath,
+					joinWorkspaceURI: true,
+				});
+
+				console.log("[LSP] Registered editor with filePath:", relativePath);
+			} catch (e) {
+				console.error("[LSP] Error in file-loaded:", e);
+			}
+		});
+
+		editor.on("switch-file", async () => {
+			languageProvider.registerEditor(editor, {
+				filePath: this.getRelativePath(),
+				joinWorkspaceURI: true,
+			});
+			console.log("switch File RelivePath: ", this.getRelativePath());
+		});
 		worker.addEventListener("message", (result) => {
 			console.log(result.data);
 			//console.log(editor.completers.splice(1, 2));
 		});
+		editor.on("changeSession", ({ session }) => {
+			const relativePath = this.getRelativePath();
+			languageProvider.registerEditor(editor, {
+				filePath: relativePath,
+				joinWorkspaceURI: true,
+			});
+			console.log("changeSession RelivePath: ", this.getRelativePath());
+		});
 
-		return test; //manager;
+		return languageProvider; //manager;
 	}
 	pesan(msg) {
 		console.log(msg);
@@ -102,9 +175,9 @@ class AcodePlugin {
 	infoUI(pesan) {
 		window.toast(pesan, 2000);
 	}
-	get activePath() {
-		return editor.activeFile?.uri.split("::")[1];
-	}
+	// 	get activePath() {
+	// 		return editor.activeFile?.uri.split("::")[1];
+	// 	}
 
 	get getSettings() {
 		// UPDATE SETTING SAAT RESTART ACODE

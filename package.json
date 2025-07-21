@@ -11,7 +11,7 @@
 		"@types/ace": "^0.0.52",
 		"ace-builds": "^1.39.1",
 		"ace-code": "^1.39.1",
-		"ace-linters": "^1.6.0",
+		"ace-linters": "^1.8.0",
 		"babel": "^5.8.38",
 		"html-tag-js": "^1.1.41",
 		"vscode-languageserver-protocol": "^3.17.5",
