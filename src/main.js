@@ -14,6 +14,7 @@ class AcodePlugin {
 				},
 			},
 		},
+
 		LanguageFeatures: {
 			features: {
 				completion: true,
@@ -79,10 +80,6 @@ class AcodePlugin {
 		let worker = new Worker(new URL("./webworker.js", import.meta.url), {
 			type: "module",
 		});
-		const openfolder = acode.require("openfolder");
-		const uri = editorManager.activeFile?.uri;
-		const folder = openfolder.find(uri);
-		const rootUri = folder?.url ? "file://" + this.formatUrl(folder.url, false) : "file:///";
 
 		let languageProvider = LanguageProvider.create(
 			worker,
@@ -117,54 +114,34 @@ class AcodePlugin {
 			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.javascript,
 		);
 
-		languageProvider.registerEditor(editor, {
-			filePath: this.getRelativePath(),
-			joinWorkspaceURI: true,
-		});
-		editor.on("file-loaded", async (file) => {
+
+		editor.on("switch-file", (file) => {
 			const uri = editorManager.activeFile?.uri;
-			if (!editor || !uri) return;
+			if (uri) {
+				let relativePath = uri.split("::")[1];
+				console.log("switch RelivePath: ", relativePath);
+				try {
+					languageProvider.setSessionFilePath(editor.session, {
+						filePath: relativePath,
+						joinWorkspaceURI: true,
+					});
 
-			const folder = openfolder.find(uri);
-			const folderUrl = folder?.url;
-			const relativePath = this.getRelativePath(uri, folderUrl);
-			console.log("file-loaded RelivePath: ", relativePath);
-			try {
-				languageProvider.setSessionFilePath(editor.session, {
-					filePath: relativePath,
-					joinWorkspaceURI: true,
-				});
+					languageProvider.registerEditor(editor, {
+						filePath: relativePath,
+						joinWorkspaceURI: true,
+					});
 
-				languageProvider.registerEditor(editor, {
-					filePath: relativePath,
-					joinWorkspaceURI: true,
-				});
-
-				console.log("[LSP] Registered editor with filePath:", relativePath);
-			} catch (e) {
-				console.error("[LSP] Error in file-loaded:", e);
+					console.log("[LSP] Registered editor with filePath:", relativePath);
+				} catch (e) {
+					console.error("[LSP] Error in file-loaded:", e);
+				}
 			}
 		});
 
-		editor.on("switch-file", async () => {
-			languageProvider.registerEditor(editor, {
-				filePath: this.getRelativePath(),
-				joinWorkspaceURI: true,
-			});
-			console.log("switch File RelivePath: ", this.getRelativePath());
-		});
 		// 		worker.addEventListener("message", (result) => {
 		// 			console.log(result.data);
 		// 			//console.log(editor.completers.splice(1, 2));
 		// 		});
-		editor.on("changeSession", ({ session }) => {
-			const relativePath = this.getRelativePath();
-			languageProvider.registerEditor(editor, {
-				filePath: relativePath,
-				joinWorkspaceURI: true,
-			});
-			console.log("changeSession RelivePath: ", this.getRelativePath());
-		});
 
 		return languageProvider; //manager;
 	}
