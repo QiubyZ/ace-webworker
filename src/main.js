@@ -2,6 +2,7 @@ import plugin from "../plugin.json";
 import { LanguageProvider } from "ace-linters";
 let appSettings = acode.require("settings");
 let { editor } = editorManager;
+
 ace.require("ace/ext/language_tools");
 class AcodePlugin {
 	$folders;
@@ -85,11 +86,13 @@ class AcodePlugin {
 			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.javascript,
 		);
 
-		test.registerEditor(editor);
+		test.registerEditor(editor, { filePath: this.activePath, joinWorkspaceURI: true });
+
 		worker.addEventListener("message", (result) => {
 			console.log(result.data);
 			//console.log(editor.completers.splice(1, 2));
 		});
+
 		return test; //manager;
 	}
 	pesan(msg) {
@@ -98,6 +101,9 @@ class AcodePlugin {
 
 	infoUI(pesan) {
 		window.toast(pesan, 2000);
+	}
+	get activePath() {
+		return editor.activeFile?.uri.split("::")[1];
 	}
 
 	get getSettings() {

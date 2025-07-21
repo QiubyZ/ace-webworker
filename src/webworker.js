@@ -248,3 +248,4 @@ manager.registerServer("go", {
 // 	className: "AceGoLinter",
 // 	modes: "go",
 // });
+
