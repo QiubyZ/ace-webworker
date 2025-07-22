@@ -87,7 +87,7 @@ class AcodePlugin {
 			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.javascript,
 		);
 		languageProvider.registerEditor(editor);
-		editor.on("switch-file", (file) => {
+		editorManager.on("switch-file", (file) => {
 			try {
 				const uri = editorManager.activeFile?.uri;
 				if (uri) {
