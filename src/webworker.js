@@ -1,62 +1,110 @@
 import { ServiceManager } from "ace-linters/build/service-manager";
 
 let manager = new ServiceManager(self);
-manager.registerService("html", {
-	module: () => import("ace-linters/build/html-service"),
-	className: "HtmlService",
-	modes: "html",
+// manager.registerService("html", {
+// 	module: () => import("ace-linters/build/html-service"),
+// 	className: "HtmlService",
+// 	modes: "html",
+// });
+
+// manager.registerService("css", {
+// 	module: () => import("ace-linters/build/css-service"),
+// 	className: "CssService",
+// 	modes: "css",
+// });
+// manager.registerService("typescript", {
+// 	module: () => import("ace-linters/build/typescript-service"),
+// 	className: "TypescriptService",
+// 	modes: "|tsx|typescript|ts|javascript|ts",
+// });
+manager.registerServer("typescript", {
+	module: () => import("ace-linters/build/language-client"),
+	modes: "javascript|typescript|js|jsx",
+	type: "socket", // "socket|worker"
+	socket: new WebSocket("ws://127.0.0.1:3030/typescript"),
+	initializationOptions: {
+		preferences: {
+			providePrefixAndSuffixTextForRename: true,
+			allowRenameOfImportPath: true,
+			includeCompletionsForModuleExports: true,
+			includeCompletionsWithInsertText: true,
+			includeCompletionsWithSnippetText: true,
+			includeAutomaticOptionalChainCompletions: true,
+			includeInlayEnumValueHints: true,
+			includeInlayFunctionParameterTypeHints: true,
+			includeInlayParameterNameHints: "all",
+			includeInlayVariableTypeHints: true,
+			useLabelDetailsInCompletionEntries: true,
+			disableSuggestions: false,
+			displayPartsForJSDoc: true,
+		},
+		watchOptions: {
+			watchFile: "DynamicPriorityPolling",
+			watchDirectory: "Recursive",
+		},
+		typescript: {
+			tsdk: "/data/data/com.termux/files/usr/lib/node_modules/typescript/lib",
+		},
+	},
+});
+manager.registerServer("go", {
+	module: () => import("ace-linters/build/language-client"),
+	modes: "golang",
+	type: "socket",
+	socket: new WebSocket("ws://127.0.0.1:3030/go"),
+});
+manager.registerServer("python", {
+	module: () => import("ace-linters/build/language-client"),
+	modes: "python",
+	type: "socket",
+	socket: new WebSocket("ws://127.0.0.1:3030/python"),
 });
 
-manager.registerService("css", {
-	module: () => import("ace-linters/build/css-service"),
-	className: "CssService",
-	modes: "css",
-});
-manager.registerService("typescript", {
-	module: () => import("ace-linters/build/typescript-service"),
-	className: "TypescriptService",
-	modes: "|tsx|typescript|ts|javascript|ts",
+manager.registerServer("java", {
+	module: () => import("ace-linters/build/language-client"),
+	modes: "java",
+	type: "socket",
+	socket: new WebSocket("ws://127.0.0.1:3030/java"),
 });
 
+// manager.registerService("less", {
+// 	module: () => import("ace-linters/build/css-service"),
+// 	className: "CssService",
+// 	modes: "less",
+// });
 
-manager.registerService("less", {
-	module: () => import("ace-linters/build/css-service"),
-	className: "CssService",
-	modes: "less",
-});
+// manager.registerService("scss", {
+// 	module: () => import("ace-linters/build/css-service"),
+// 	className: "CssService",
+// 	modes: "scss",
+// });
+// manager.registerService("json", {
+// 	module: () => import("ace-linters/build/json-service"),
+// 	className: "JsonService",
+// 	modes: "json",
+// });
+// manager.registerService("json5", {
+// 	module: () => import("ace-linters/build/json-service"),
+// 	className: "JsonService",
+// 	modes: "json5",
+// });
 
-manager.registerService("scss", {
-	module: () => import("ace-linters/build/css-service"),
-	className: "CssService",
-	modes: "scss",
-});
-manager.registerService("json", {
-	module: () => import("ace-linters/build/json-service"),
-	className: "JsonService",
-	modes: "json",
-});
-manager.registerService("json5", {
-	module: () => import("ace-linters/build/json-service"),
-	className: "JsonService",
-	modes: "json5",
-});
+// manager.registerService("yaml", {
+// 	module: () => import("ace-linters/build/yaml-service"),
+// 	className: "YamlService",
+// 	modes: "yaml",
+// });
 
-manager.registerService("yaml", {
-	module: () => import("ace-linters/build/yaml-service"),
-	className: "YamlService",
-	modes: "yaml",
-});
-
-manager.registerService("xml", {
-	module: () => import("ace-linters/build/xml-service"),
-	className: "XmlService",
-	modes: "xml",
-});
-manager.registerService("php", {
-	module: () => import("ace-linters/build/php-service"),
-	className: "PhpService",
-	modes: "php",
-});
+// manager.registerService("xml", {
+// 	module: () => import("ace-linters/build/xml-service"),
+// 	className: "XmlService",
+// 	modes: "xml",
+// });
+// manager.registerService("php", {
+// 	module: () => import("ace-linters/build/php-service"),
+// 	className: "PhpService",
+// 	modes: "php",
+// });
 
 // manager.registerService("javascript", {
 // 	initializationOptions: {
@@ -118,12 +166,6 @@ manager.registerService("php", {
 // 	},
 // });
 
-// manager.registerServer("java", {
-// 	module: () => import("ace-linters/build/language-client"),
-// 	modes: "java",
-// 	type: "socket",
-// 	socket: new WebSocket("ws://127.0.0.1:2080/java"),
-// });
 // manager.registerServer("javascript", {
 // 	module: () => import("ace-linters/build/language-client"),
 
@@ -242,4 +284,3 @@ manager.registerServer("go", {
 // 	className: "AceGoLinter",
 // 	modes: "go",
 // });
-

@@ -2,15 +2,20 @@ import plugin from "../plugin.json";
 import { LanguageProvider } from "ace-linters";
 let appSettings = acode.require("settings");
 let { editor } = editorManager;
+import { folderPath } from "./utils/pathFolder";
 
-ace.require("ace/ext/language_tools");
 class AcodePlugin {
 	$folders;
 	defaultSettings = {
 		Functionality: {
 			functionality: {
 				completion: {
-					overwriteCompleters: false,
+					overwriteCompleters: true,
+					lspCompleterOptions: {
+						triggerCharacters: {
+							add: ["."],
+						},
+					},
 				},
 			},
 		},
@@ -26,6 +31,7 @@ class AcodePlugin {
 				signatureHelp: true,
 			},
 		},
+		
 
 		setGlobalOptions: {
 			javascript: {},
@@ -50,6 +56,7 @@ class AcodePlugin {
 	}
 
 	MyWorker() {
+		let acodePathDirectory = new folderPath();
 		let worker = new Worker(new URL("./webworker.js", import.meta.url), {
 			type: "module",
 		});
@@ -86,30 +93,28 @@ class AcodePlugin {
 			"javascript",
 			this.getSettings.setGlobalOptions || this.defaultSettings.setGlobalOptions.javascript,
 		);
-		languageProvider.registerEditor(editor);
-		editorManager.on("switch-file", (file) => {
-			try {
-				const uri = editorManager.activeFile?.uri;
-				if (uri) {
-					let relativePath = uri.split("::")[1];
-					l;
-					languageProvider.setSessionFilePath(editor.session, {
-						filePath: relativePath,
-						joinWorkspaceURI: true,
-					});
-					console.log("Set session path: ", uri);
-				}
-			} catch (e) {
-				console.log("Err: ", e);
-			}
+
+		languageProvider.registerEditor(editor, {
+			filePath: acodePathDirectory.getDirectoryFilePath(),
+			joinWorkspaceURI: true,
 		});
 
-		// 		worker.addEventListener("message", (result) => {
-		// 			console.log(result.data);
-		// 			//console.log(editor.completers.splice(1, 2));
-		// 		});
+		editor.on("changeSession", () => {
+			const currentEditor = editorManager.editor;
+			const sessionUri = acodePathDirectory.getDirectoryFilePath();
 
-		return languageProvider; //manager;
+			if (!sessionUri) {
+				console.warn("[LSP] Skipping re-registration: no session URI available.");
+				return;
+			}
+
+			console.log("[LSP] Session changed. Re-registering editor with URI:", sessionUri);
+			languageProvider.registerEditor(currentEditor, {
+				filePath: sessionUri,
+				joinWorkspaceURI: false,
+			});
+		});
+		return languageProvider;
 	}
 	pesan(msg) {
 		console.log(msg);
@@ -118,9 +123,9 @@ class AcodePlugin {
 	infoUI(pesan) {
 		window.toast(pesan, 2000);
 	}
-	// 	get activePath() {
-	// 		return editor.activeFile?.uri.split("::")[1];
-	// 	}
+	activePath() {
+		return editorManager.activeFile?.uri.split("::")[1];
+	}
 
 	get getSettings() {
 		// UPDATE SETTING SAAT RESTART ACODE
